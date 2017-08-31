@@ -1,0 +1,105 @@
+---
+title: "DATA604 - HW1 - Distribution Simulation"
+author: "Chris G Martin"
+date: "August 29, 2017"
+output:
+  html_document:
+    fig_caption: yes
+    force_captions: yes
+    highlight: pygments
+    number_sections: no
+    theme: united
+  pdf_document:
+    fig_caption: yes
+    highlight: pygments
+    latex_engine: xelatex
+    number_sections: no
+fontsize: 11pt
+---
+
+#Homework One - Simulation Distribution
+
+Generate 100 simulations of 30 samples each from a distribution (other than normal) of your choice.  Graph the sampling distribution of means.  Graph the sampling distribution of the minimum. Share your graphs and your R code. What did the simulation of the means demonstrate?  What about the distribution of the minimum...?  
+
+```{r}
+library(ggplot2)
+```
+
+
+
+##Simulation
+
+To generate the samples, I decided to simple use the built-in *sample* function as it makes the process quite simple to do. This distribution is not necessarily normal.
+
+```{r}
+
+distsim <- function(quant, reps){
+  #create empty objects for the means and mins
+  simmeans <- c()
+  simmins <- c()
+  
+  #loop the function reps number of times
+  for (i in 1:reps){
+    #gather a sample of numbers between 0 and 1000, quant times
+    x <- sample(0:1000, quant, replace=TRUE)
+    #collect the mean of the sample
+    simmeans[i] <- mean(x)
+    #collect the minimum of the sample
+    simmins[i] <- min(x)
+  }
+  
+  #save the simulation as a data frame
+  simulation <- data.frame(means=simmeans, mins=simmins)
+  simulation
+}
+
+sim <- distsim(30, 100)
+head(sim)
+```
+
+
+###Distribution of Means
+
+According to the central limit theorem (CLT), a sampling distribution approaches normality as the sample grows large.
+
+```{r}
+ggplot(sim, aes(x=means)) + geom_histogram() + ggtitle("Distribution of Means")
+```
+
+
+
+###Distribution of Minimums
+
+Interestingly, the distribution of minimums is skewed but there are still samples in which the minimum was greater than the expected mean (500).
+
+```{r}
+ggplot(sim, aes(x=mins)) + geom_histogram() + ggtitle("Distribution of Minimums")
+```
+
+
+
+###Discussion
+
+One way to test the CLT and confirm my hypothesis that there is the potential for higher than expected minimums (x > 500) is to expand the sample to more repetitions and a higher sample size. 
+
+```{r}
+sim <- distsim(50, 1000)
+```
+The CLT appears to hold:
+
+```{r}
+ggplot(sim, aes(x=means)) + geom_histogram() + ggtitle("Distribution of Means")
+```
+
+And interestingly, there is a likelihood of higher than expected minimums:
+
+```{r}
+ggplot(sim, aes(x=mins)) + geom_histogram() + ggtitle("Distribution of Minimums")
+```
+
+This simulation reminds me of a game (possibly a test?) where one person thinks of a number and asks the player to guess the number. Typically the player will guess regular (standard) numbers such as 1, 100, 50, 25, etc. The part that makes this game entertaining is that there are no contraints to the simlator's number. It can be an integer (such as 1 or 100), it can be a decimal (0.242329 or 123.2930123), an imaginary number (i or n), a placeholder number (pi or infinity), or even something else (-4.2323 or the square root of 2 or 0/4). This simulation reminds me of that game, because there is always the possiblity for the number (minimum) to be different than expected so long as the constraints allow it to.
+
+Lesson: assume that anything is possible, so long as it is possible.
+
+Secondary lesson: simulations can help discover these 'anything' scenarios.
+
