@@ -1,0 +1,99 @@
+---
+title: "DATA604 - HW3 - Simio and Simulation: Chapter 3 - Discussion"
+author: "Chris G Martin"
+date: "September 17, 2017"
+output:
+  html_document:
+    fig_caption: yes
+    force_captions: yes
+    highlight: pygments
+    number_sections: no
+    theme: united
+  pdf_document:
+    fig_caption: yes
+    highlight: pygments
+    latex_engine: xelatex
+    number_sections: no
+fontsize: 11pt
+---
+
+#Homework Three - Simio and Simulation: Chapter 3 - Discussion
+
+Complete problems 17 from Section 3.5 in Kelton.
+
+```{r}
+#create reproducability
+set.seed(123)
+```
+
+
+
+##Problem 17
+
+Walther had a roadside produce stand where he sells oats, peas, beans, and barley. He buys these products at per-pound wholesale prices of, respectively, \$1.05, \$3.17, \$1.99, and \$0.95; he sells them at per-pound retail prices of, respectively, \$1.29, \$3.76, \$2.23, \$1.65. Each day the amount demanded (in pounds) could be as little as zero for each product, respectively, and as much as 10, 8, 14, and 11 for oats, peas, beans, and barely, respectively; he sells only whole-pound amounts, no partial pounds. Assume a discrete uniform distribution for daily demand for each product over its range; assume as well that Walther always has enough inventory to satisfy all demand. The summer selling season is 90 days, and demand each day is independent of demand on other days. Create a spreadsheet simulation that will, for each day as well as for the whole season, simulate Walther's total cost, total revenue, and total profit.
+
+
+```{r}
+oats <- data.frame('cost'=c(1.05), 'sale'=c(1.29), 'profit'=c(1.29-1.05), 'maxdemand'=c(10))
+peas <- data.frame('cost'=c(3.17), 'sale'=c(3.76), 'profit'=c(3.76-3.17), 'maxdemand'=c(8))
+beans <- data.frame('cost'=c(1.99), 'sale'=c(2.23), 'profit'=c(2.23-1.99), 'maxdemand'=c(14))
+barley <- data.frame('cost'=c(0.95), 'sale'=c(1.65), 'profit'=c(1.65-0.95), 'maxdemand'=c(11))
+```
+
+A function will easily solve this:
+
+```{r}
+#function to run through simulations
+demandrun <- function(df, days){
+  
+  #create new data frame with needed columns
+  df2 <- data.frame('day'=c(1:days), 'demand'=c(rep('', days)), 'dailycost'=c(rep('', days)), 'dailysale'=c(rep('', days)), 'dailyprofit'=c(rep('', days)))
+  
+  #fill columns with data
+  df2$demand <- round(runif(days, min=0, max=oats['maxdemand'][[1]]))
+  df2$dailycost <- df2$demand * df$cost[[1]]
+  df2$dailysale <- df2$demand * df$sale[[1]]
+  df2$dailyprofit <- df2$demand * df$profit[[1]]
+  
+  #output data frame
+  df2
+}
+```
+
+and output our simulations:
+
+```{r}
+oats2 <- demandrun(oats, 90)
+head(oats2)
+
+peas2 <- demandrun(peas, 90)
+head(peas2)
+
+beans2 <- demandrun(beans,90)
+head(beans2)
+
+barley2 <- demandrun(barley, 90)
+head(barley2)
+```
+
+To see a total view:
+
+```{r}
+totaldf <- oats2 + peas2 + beans2 + barley2
+totaldf$day <- totaldf$day / 4
+head(totaldf)
+```
+
+In which we can see total profits:
+
+```{r}
+sum(totaldf$dailyprofit)
+```
+
+##Simio
+
+My thoughts with re-creating this simulation in Simio would be to create an input (Source) without a frequency limit (e.g. unlimited customers can enter), four parallel servers (e.g. a fruit stand for each food type), and one exit/sink (e.g. leaving the market). At each stand have a maximum capacity of your max demand, and minimum capacity of 0 (e.g. no demand for that food). When running the simulation, each simulation 'run' would be a day, and using the financials section in Simio a cost/profit would be calculated.
+
+When trying to do this, I was unable to figure out how to work profit per server (as I only see cost in the financials) and could not solve for a daily run period.
+
+

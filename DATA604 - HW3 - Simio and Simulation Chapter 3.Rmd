@@ -1,0 +1,257 @@
+---
+title: "DATA604 - HW3 - Simio and Simulation: Chapter 3"
+author: "Chris G Martin"
+date: "September 17, 2017"
+output:
+  html_document:
+    fig_caption: yes
+    force_captions: yes
+    highlight: pygments
+    number_sections: no
+    theme: united
+  pdf_document:
+    fig_caption: yes
+    highlight: pygments
+    latex_engine: xelatex
+    number_sections: no
+fontsize: 11pt
+---
+
+#Homework Three - Simio and Simulation: Chapter 3
+
+Complete problems 1, 5, and 17 from Section 3.5 in Kelton.
+
+```{r}
+#create reproducability
+set.seed(123)
+```
+
+
+##Reference: Section 3.2.1
+
+Throw two fair dice, and take the result as the sum of the faces that come up. Each die has a probability of 1/6 of producing each of the integeres 1, 2, ..., 6 and so the 2, 3, ..., 12.
+
+##Problem 1
+
+Extend the simulation of throwing two dice in Section 3.2.1 in each of the following ways (one at a time, not cumulatively):
+
+###a
+
+Instead of 50 throws, extendthe spread sheet to make 500 throws, and compare your results. Tap F9 to get a "fresh" set of random numbers and thus a fresh set of results.
+
+
+
+
+```{r}
+dice1 <- c(1/6, 1/6, 1/6, 1/6, 1/6, 1/6)
+dice2 <- c(1/6, 1/6, 1/6, 1/6, 1/6, 1/6)
+```
+
+```{r}
+rundice <- function(diceset1, diceset2, nruns){
+  #empty list x
+  x <- c()
+  
+  #run simulation
+  for(i in 1:nruns){
+    x[i] <- sample(1:6, 1, prob=diceset1) + sample(1:6, 1, prob=diceset2)
+  }
+  
+  #calculate outputs
+  xavg <- mean(x)
+  xmed <- median(x)
+  xmin <- min(x)
+  xmax <- max(x)
+  
+  #create data frame with outputs
+  data.frame(xavg, xmin, xmax, xmed)
+}
+rundice(dice1, dice2, 50)
+```
+
+Running the function is simple with 500 throws instead of 50:
+
+```{r}
+rundice(dice1, dice2, 500)
+```
+
+
+###b
+
+Load the dice by changing the probabilities of the faces to be something other than uniform at 1/6 for each face. Be careful to ensure that your probabilities sum to 1.
+
+```{r}
+#create nearly random probabilities
+dice3 <- c(2/6, 1/12, 1/12, 2/6, 1/12, 1/12)
+dice4 <- c(1/6, 1/12, 1/12, 1/12, 3/12, 2/6)
+
+#check the probabilties sum to one
+sum(dice3)
+sum(dice4)
+```
+
+Running the simulation for 50 throws:
+
+```{r}
+rundice(dice3, dice4, 50)
+```
+
+Running the simulation for 500 throws:
+
+```{r}
+rundice(dice3, dice4, 50)
+```
+
+
+###c
+
+Use Risk or another Excel add-in for static Monte Carlo spreadsheet simulation, to make 10,000 throws of the pair of fair dice, and compare your results to the true probabilities of getting the sum equal to each of 2, 3, ..., 12 as well as to the true expected value of 7.
+
+```{r}
+rundiceEV <- function(diceset1, diceset2, nruns){
+  #empty list x
+  x <- c()
+  
+  #run simulation
+  for(i in 1:nruns){
+    x[i] <- sample(1:6, 1, prob=diceset1) + sample(1:6, 1, prob=diceset2)
+  }
+  
+  #output list x
+  x
+  }
+```
+
+Estimated value (probabilty) of 7 for 50 throws:
+
+```{r}
+probc <- rundiceEV(dice1, dice2, 50)
+EVc <- sum(probc == 7)/50
+EVc
+```
+
+Estimated value (probabilty) of 7 for 500 throws:
+
+```{r}
+probc <- rundiceEV(dice1, dice2, 500)
+EVc <- sum(probc == 7)/500
+EVc
+```
+
+
+##Problem 5
+
+In the Monte Carlo integration of Section 3.2.2, add to the spreadsheet calculation of the standard deviation of the 50 individual values, and use that, together with the mean already in H4, to compute a 95% confidence interval on the extract integral in cell I4; does your confidence interval contain, or "cover" the exact integral? How often (tap F9 repeatedly and keep track manually)? Repeat all this, but with a 90% confidence interval, and then with a 99% confidence interval.
+
+For reference: The Monte Carlo integration used a random sample between a (min) and b (max), with a mean and standard deviation, and coputed an estimate and exact using the following for an estimate of X:
+
+$Estimate = (b-a) \phi_{u,o}(X_{i})$
+
+Setting the numbers and running the function with 50 runs:
+
+```{r}
+prob5mean <- 5.80
+prob5std <- 2.30
+prob5min <- 4.50
+prob5max <- 6.70
+
+montcarl <- function(min, max, mean, stdev, nruns){
+  #create empty list x and y
+  x <- c()
+  y <- c()
+  
+  #function to run
+  for(i in 1:nruns){
+    x <- runif(1, min=0, max=1)
+    y[i] <- (max-min) * (1/(stdev*sqrt(2*pi))) * exp(-((x-mean)^2/(2*stdev^2)))
+  }
+  
+  #return output
+  y
+}
+
+montcarl2 <- montcarl(prob5min, prob5max, prob5mean, prob5std, 50)
+```
+
+Estimating the standard devation:
+
+```{r}
+sum(montcarl2)
+```
+
+90% confidence interval:
+
+```{r}
+inter90 <- data.frame('low'=c(((50-1)*prob5std)/70.222), 'high'=c(((50-1)*prob5std)/71.420))
+sqrt(inter90)
+```
+
+99% confidence interval:
+
+```{r}
+inter99 <- data.frame('low'=c(((50-1)*prob5std)/78.231), 'high'=c(((50-1)*prob5std)/79.490))
+sqrt(inter99)
+```
+
+
+##Problem 17
+
+Walther had a roadside produce stand where he sells oats, peas, beans, and barley. He buys these products at per-pound wholesale prices of, respectively, \$1.05, \$3.17, \$1.99, and \$0.95; he sells them at per-pound retail prices of, respectively, \$1.29, \$3.76, \$2.23, \$1.65. Each day the amount demanded (in pounds) could be as little as zero for each product, respectively, and as much as 10, 8, 14, and 11 for oats, peas, beans, and barely, respectively; he sells only whole-pound amounts, no partial pounds. Assume a discrete uniform distribution for daily demand for each product over its range; assume as well that Walther always has enough inventory to satisfy all demand. The summer selling season is 90 days, and demand each day is independent of demand on other days. Create a spreadsheet simulation that will, for each day as well as for the whole season, simulate Walther's total cost, total revenue, and total profit.
+
+
+```{r}
+oats <- data.frame('cost'=c(1.05), 'sale'=c(1.29), 'profit'=c(1.29-1.05), 'maxdemand'=c(10))
+peas <- data.frame('cost'=c(3.17), 'sale'=c(3.76), 'profit'=c(3.76-3.17), 'maxdemand'=c(8))
+beans <- data.frame('cost'=c(1.99), 'sale'=c(2.23), 'profit'=c(2.23-1.99), 'maxdemand'=c(14))
+barley <- data.frame('cost'=c(0.95), 'sale'=c(1.65), 'profit'=c(1.65-0.95), 'maxdemand'=c(11))
+```
+
+A function will easily solve this:
+
+```{r}
+#function to run through simulations
+demandrun <- function(df, days){
+  
+  #create new data frame with needed columns
+  df2 <- data.frame('day'=c(1:days), 'demand'=c(rep('', days)), 'dailycost'=c(rep('', days)), 'dailysale'=c(rep('', days)), 'dailyprofit'=c(rep('', days)))
+  
+  #fill columns with data
+  df2$demand <- round(runif(days, min=0, max=oats['maxdemand'][[1]]))
+  df2$dailycost <- df2$demand * df$cost[[1]]
+  df2$dailysale <- df2$demand * df$sale[[1]]
+  df2$dailyprofit <- df2$demand * df$profit[[1]]
+  
+  #output data frame
+  df2
+}
+```
+
+and output our simulations:
+
+```{r}
+oats2 <- demandrun(oats, 90)
+head(oats2)
+
+peas2 <- demandrun(peas, 90)
+head(peas2)
+
+beans2 <- demandrun(beans,90)
+head(beans2)
+
+barley2 <- demandrun(barley, 90)
+head(barley2)
+```
+
+To see a total view:
+
+```{r}
+totaldf <- oats2 + peas2 + beans2 + barley2
+totaldf$day <- totaldf$day / 4
+head(totaldf)
+```
+
+In which we can see total profits:
+
+```{r}
+sum(totaldf$dailyprofit)
+```
