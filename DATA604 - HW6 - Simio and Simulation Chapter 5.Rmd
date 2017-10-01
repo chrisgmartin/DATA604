@@ -1,0 +1,130 @@
+---
+title: "DATA604 - HW6 - Simio and Simulation: Chapter 5"
+author: "Chris G Martin"
+date: "October 1, 2017"
+output:
+  html_document:
+    fig_caption: yes
+    force_captions: yes
+    highlight: pygments
+    number_sections: no
+    theme: united
+  pdf_document:
+    fig_caption: yes
+    highlight: pygments
+    latex_engine: xelatex
+    number_sections: no
+fontsize: 11pt
+---
+
+#Homework Six - Simio and Simulation: Chapter 5
+
+Complete problems 1, 2, 3, 4, and 5 from Chapter 5 in Kelton.
+
+```{r}
+#create reproducability
+set.seed(123)
+```
+
+
+##Problem 1
+
+What is the difference between an object property and an object state?
+
+Object Property - 'defined within an object to collect information from the user to customize that object's behavior.'
+
+Object State - 'defined within an object to hold the value of something that might change while the model is running.'
+
+Object properties are the settings that define how an object behaves (i.e. if the object is an entity or server, and if the server intakes 1 or 3 resources at a time). Object states are like attributes and the state at a given time is a set of information. States can continuously change during the simulation, while properties are set by the user and do not change.
+
+##Problem 2
+
+Consider a process associated with a Server object. What is the difference beeween a token's parent object and it's associated object?
+
+The token's parent object is the object in which the process is defined, while an associated object is the object that triggered the process.
+
+##Problem 3
+
+Develop a queueing model that gives the steady-state values analogous to the values in Table 5.2 (Model 5-1 with the exponential processing times at both stations).
+
+![Simio Simulation Model](https://github.com/chrisgmartin/DATA604/raw/master/Simio_Sim_15.png)
+
+![Simio Simulation Experiment](https://github.com/chrisgmartin/DATA604/raw/master/Simio_Sim_16.png)
+
+
+```{r}
+prob3csv <- read.csv('https://raw.githubusercontent.com/chrisgmartin/DATA604/master/HW6%20Model_Model_Experiment1_ResultsSummary.csv')
+prob3results <- prob3csv[c(44, 10, 1, 4, 88, 82), c(3, 6, 7, 8, 9, 10, 11, 12)]
+prob3results
+```
+
+
+##Problem 4
+
+Consider an office where people come to get their drivers' licenses. The process involves three steps for arriving customers -- reception / application; a vision exam; and a written exam. Assume that customer arrivals are Poisson with a rate of 6 per hour (i.e., interarrival times are exponentially distributed with mean 10 minutes). The processing time distributions for the three processes are given in Table 5.8. The office has one person responsible for reception/application and one person responsible for administering the vision exams. The written exam is computer-based and there are three computer stations where customers can take the exam. Develop a Simio model of this system. Assume that the office opens at 9:00 a.m. and closes at 5:00 p.m. The performance metrics of interest include the time that customers spend in the system, the utilizations of the office employees and computer stations, and the average and maximum numbers of customers in the reception/application queue, the vision exam queue, and the written exam queue. How many replications should be run in order to be confident about your results? Justify your answer.
+
+```{r}
+#Table 5.8 Processing Time Parameters for Problem 4
+data.frame('Process'=c('Reception/Application','Vision Exam', 'Written Exam'), 'Processing time distribution'=c('triangular(5, 8, 11)', 'triangular(2, 4, 6)', 'triangular(15, 15, 20)'))
+```
+
+The model is run for 8 hours (9:00 am to 5:00 pm), with performance metrics below (in Problem 5) for 50 replications of the model with no warm up time. Since this simulation has three main servers each with triangular distributions across short time-frame (8 hours), the number of replications should be high enough for confidence but not too high for unnecessary overhead on resources. My decision for 50 replications is that, on a made-up scale, 100 replications is a very high precision and 1 is a single run through. The simulation is not overly difficult (there are no weighted links or conditional properties), 
+
+
+##Problem 5
+
+Animate the model from Problem 4. If you did not already do so, specify a reasonable office layout and use Path object to incorporate customer movement through the office. Make sure that the distances between stations are reasonable for a drivers' license office and that the entity speed is appropriate for humans walking.
+
+
+![Simio Simulation Model](https://github.com/chrisgmartin/DATA604/raw/master/Simio_Sim_17.png)
+
+![Simio Simulation Model Animation](https://github.com/chrisgmartin/DATA604/raw/master/Simio_Sim_18.png)
+
+Distances seem reasonable and walking paths were set to .15 minutes per path (9 seconds).
+
+```{r}
+prob5csv <- read.csv('https://raw.githubusercontent.com/chrisgmartin/DATA604/master/HW6%20Model_Model2_Experiment1_ResultsSummary.csv')
+prob5results <- prob5csv[c(4, 10, 44, 52, 26, 27, 64, 65, 88, 89), c(3, 6, 7, 8, 9, 10, 11, 12)]
+prob5results
+
+```
+
+The performance metrics of interest include the time that customers spend in the system, the utilizations of the office employees and computer stations, and the average and maximum numbers of customers in the reception/application queue, the vision exam queue, and the written exam queue.
+
+
+##Banks DES, Chapter 8: 5
+
+###Banks 5
+
+Given the folling cdf for a continuous variable with range from -3 to 4, develop a generator for the variable, generate 1000 values, and plot a histogram:
+
+$F(x) = 0, x <= -3$
+
+$F(x) = \frac{1}{2} + \frac{x}{6}, -3 < x <= 0$
+
+$F(x) = \frac{1}{2} + \frac{x^2}{32}, 0 < x <= 4$
+
+$F(x) = 1, x > 4$
+
+```{r}
+banks5 <- function(size){
+  x <- runif(size, min=-3, max=4)
+  for(i in 1:size){
+    if(x[i] == 0){
+      x[i] <- -3
+    } else if(x[i] > -3 & (x[i] < 0 | x[i] == 0)){
+      x[i] <- (1/2) + (x[i]/6)
+    } else if(x[i] > 0 & (x[i] <4 | x[i] == 4)){
+      x[i] <- (1/2) + (x[i]^2)/32
+    } else{
+      x[i] <- 1
+    }
+  }
+  x
+}
+
+gen5 <- banks5(1000)
+summary(gen5)
+hist(gen5)
+plot(density(gen5), xlim=c(0,1))
+```

@@ -1,0 +1,62 @@
+---
+title: "DATA604 - HW6 - Banks: Chapter 8 Problem 5 - Discussion"
+author: "Chris G Martin"
+date: "October 1, 2017"
+output:
+  html_document:
+    fig_caption: yes
+    force_captions: yes
+    highlight: pygments
+    number_sections: no
+    theme: united
+  pdf_document:
+    fig_caption: yes
+    highlight: pygments
+    latex_engine: xelatex
+    number_sections: no
+fontsize: 11pt
+---
+
+#Homework Six - Banks: Chapter 8 Problem 5 - Discussion
+
+```{r}
+#create reproducability
+set.seed(123)
+```
+
+##Banks DES, Chapter 8: 5
+
+###Banks 5
+
+Given the folling cdf for a continuous variable with range from -3 to 4, develop a generator for the variable, generate 1000 values, and plot a histogram:
+
+$F(x) = 0, x <= -3$
+
+$F(x) = \frac{1}{2} + \frac{x}{6}, -3 < x <= 0$
+
+$F(x) = \frac{1}{2} + \frac{x^2}{32}, 0 < x <= 4$
+
+$F(x) = 1, x > 4$
+
+```{r}
+banks5 <- function(size){
+  x <- runif(size, min=-3, max=4)
+  for(i in 1:size){
+    if(x[i] == 0){
+      x[i] <- -3
+    } else if(x[i] > -3 & (x[i] < 0 | x[i] == 0)){
+      x[i] <- (1/2) + (x[i]/6)
+    } else if(x[i] > 0 & (x[i] <4 | x[i] == 4)){
+      x[i] <- (1/2) + (x[i]^2)/32
+    } else{
+      x[i] <- 1
+    }
+  }
+  x
+}
+
+gen5 <- banks5(1000)
+summary(gen5)
+hist(gen5)
+plot(density(gen5), xlim=c(0,1))
+```
