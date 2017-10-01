@@ -1,0 +1,75 @@
+---
+title: "DATA604 - HW5 - Simio and Simulation: Chapter 4"
+author: "Chris G Martin"
+date: "October 1, 2017"
+output:
+  html_document:
+    fig_caption: yes
+    force_captions: yes
+    highlight: pygments
+    number_sections: no
+    theme: united
+  pdf_document:
+    fig_caption: yes
+    highlight: pygments
+    latex_engine: xelatex
+    number_sections: no
+fontsize: 11pt
+---
+
+#Homework Five - Simio and Simulation: Chapter 4
+
+Complete problems 2, 3, 9, and 12 from Chapter 4 in Kelton.
+
+```{r}
+#create reproducability
+set.seed(123)
+```
+
+
+##Problem 2
+
+Develop a queueing model for the Simio model from Problem 1 (see HW4) and compute the exact values for the steady state time entities spend in the system and the expected number of entities processed in 100 hours.
+
+![Simio Simulation Results](https://github.com/chrisgmartin/DATA604/raw/master/Simio_Sim_6.png)
+
+
+##Problem 3
+
+Using the model from Problem 1, create an experiment that includes 100 replications. Run the experiment and observe the SMORE plot for the time entities spend in the system. Experiment with the various SMORE plot settings -- viewing the histogram, rotating the plot, changing the upper and lower percentile values.gz
+
+![Simio Expeirment Results](https://github.com/chrisgmartin/DATA604/raw/master/Simio_Sim_7.png)
+
+![Simio SMORE plot](https://github.com/chrisgmartin/DATA604/raw/master/Simio_Sim_8.png)
+
+![Simio SMORE plot 2, rotation](https://github.com/chrisgmartin/DATA604/raw/master/Simio_Sim_9.png)
+
+![Simio SMORE plot 3, 90% CI, 55% Upper Percentile, 45% Lower Percentile](https://github.com/chrisgmartin/DATA604/raw/master/Simio_Sim_10.png)
+
+
+##Problem 9
+
+Replicate the model from Problem 1 using Simio processess (i.e., not using objects from the Standard Library). Compare the run times for this model and the model from Problem 1 for 50 replications of length 100 hours.
+
+![Processes](https://github.com/chrisgmartin/DATA604/raw/master/Simio_Sim_11.png)
+![Results](https://github.com/chrisgmartin/DATA604/raw/master/Simio_Sim_12.png)
+
+
+
+
+
+##Problem 12
+
+Animate your model from Problem 1 assuming that you are modeling a cashier at a fast food restaurant -- the entities represent customers and the server represents the cashier at the cash register. Use Simio's standard symbols for your animation.
+
+
+![Animation](https://github.com/chrisgmartin/DATA604/raw/master/Simio_Sim_13.png)
+
+
+##Problem 13
+
+Modify your model from Problem 1 assuming that you are modeling a manufacturing process that involves drilling holes in a steel plate. The drilling machine has capacity for up to 3 parts at a time (c=3 in queueing terms). The arrival rate should be 120 parts per hour and the processing rate should be 50 parts per hour. Use Google 3D Warehouse to find appropriate symbols for other entities (steel plates) and the server (a drill press or other hole-making device). Add a label to your animation to show how many parts are being processed as the model runs.
+
+![Simio Model](https://github.com/chrisgmartin/DATA604/raw/master/Simio_Sim_14.png)
+
+
